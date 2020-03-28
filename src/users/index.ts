@@ -7,14 +7,14 @@ import { Transactional, Propagation } from 'typeorm-transactional-cls-hooked';
 
 @injectable()
 export class UsersService {
-  public readonly usersRepository: UsersRepository;
+  public readonly usersRep: UsersRepository;
   constructor() {
-    this.usersRepository = getCustomRepository(UsersRepository);
+    this.usersRep = getCustomRepository(UsersRepository);
   }
 
   @Transactional({ propagation: Propagation.SUPPORTS })
   async ensureUser(tgUser: TelegramUser): Promise<User> {
-    const existingUser = await this.usersRepository.findOne({
+    const existingUser = await this.usersRep.findOne({
       tg_id: tgUser.id,
     });
 
@@ -22,7 +22,7 @@ export class UsersService {
       return existingUser;
     }
 
-    const newUser = this.usersRepository.create({
+    const newUser = this.usersRep.create({
       tg_id: tgUser.id,
       tg_is_bot: tgUser.is_bot,
       tg_first_name: tgUser.first_name,
@@ -30,7 +30,7 @@ export class UsersService {
       tg_username: tgUser.username,
       tg_language_code: tgUser.language_code,
     });
-    await this.usersRepository.save(newUser);
+    await this.usersRep.save(newUser);
 
     return newUser;
   }

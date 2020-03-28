@@ -4,4 +4,5 @@ export const Types = {
   CommandHandler: Symbol.for('CommandHandler'),
   Logger: Symbol.for('Logger'),
   UsersService: Symbol.for('UsersService'),
-}
+  ChatsService: Symbol.for('ChatsService'),
+};

@@ -24,9 +24,7 @@ export class CommandHandlerService {
 
   @Transactional()
   public async search(ctx: ContextMessageUpdate): Promise<void> {
-    const user = await this.usersService.usersRepository.findOne(
-      ctx.session.userId,
-    );
+    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
 
     if (user.status === UserStatus.BUSY) {
       ctx.reply(Strings.stop_first_msg);
@@ -34,7 +32,7 @@ export class CommandHandlerService {
     }
 
     user.status = UserStatus.SEARCHING;
-    await this.usersService.usersRepository.save(user);
+    await this.usersService.usersRep.save(user);
     ctx.reply(Strings.search_started_msg);
   }
 
