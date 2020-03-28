@@ -6,6 +6,7 @@ import { Types } from '../types';
 import { botClsNs } from '../lib/bot-cls-ns';
 import { ConfigService } from '../config';
 import { CommandHandlerService } from '../command-handler';
+import session from 'telegraf/session'
 
 @injectable()
 export class BotService {
@@ -41,6 +42,8 @@ export class BotService {
         return next();
       });
     });
+
+    bot.use(session())
 
     return bot;
   }
