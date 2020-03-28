@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   Column,
 } from 'typeorm';
+import { UserStatus } from '../constants/UserStatus.enum';
 
 @Entity({
   name: 'users',
@@ -36,4 +37,7 @@ export class User {
 
   @Column({ type: 'varchar' })
   tg_username: string;
+
+  @Column()
+  status: UserStatus;
 }

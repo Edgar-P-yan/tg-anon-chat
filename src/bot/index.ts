@@ -6,7 +6,7 @@ import { Types } from '../types';
 import { botClsNs } from '../lib/bot-cls-ns';
 import { ConfigService } from '../config';
 import { CommandHandlerService } from '../command-handler';
-import session from 'telegraf/session'
+import session from 'telegraf/session';
 
 @injectable()
 export class BotService {
@@ -18,15 +18,25 @@ export class BotService {
     @inject(Types.Logger)
     private readonly logger: winston.Logger,
     @inject(Types.CommandHandler)
-    private readonly commandHandler: CommandHandlerService
+    private readonly commandHandler: CommandHandlerService,
   ) {
     this.bot = this.initBot();
-    this.setCommandHandlers()
+    this.setCommandHandlers();
   }
 
   private setCommandHandlers(): void {
-    this.bot.start(this.commandHandler.startHandler.bind(this.commandHandler))
-    this.bot.command('me', this.commandHandler.me.bind(this.commandHandler))
+    this.bot.start(
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.startHandler(ctx),
+    );
+
+    this.bot.command('me', ctx => this.commandHandler.me(ctx));
+
+    this.bot.command(
+      'search',
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.search(ctx),
+    );
   }
 
   private initBot(): Telegraf<ContextMessageUpdate> {
@@ -43,7 +53,7 @@ export class BotService {
       });
     });
 
-    bot.use(session())
+    bot.use(session());
 
     return bot;
   }
