@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "@types/jest": "~25.1.2",
+    "@types/lodash": "^4.14.149",
     "@types/node": "~12.12.27",
     "@typescript-eslint/eslint-plugin": "~2.19.2",
     "@typescript-eslint/parser": "~2.19.2",
@@ -31,6 +32,14 @@
   "author": "Jakub Synowiec <github@jakubsynowiec.info>",
   "license": "Apache-2.0",
   "dependencies": {
-    "tslib": "~1.10.0"
+    "cls-hooked": "^4.2.2",
+    "dotenv": "^8.2.0",
+    "inversify": "^5.0.1",
+    "lodash": "^4.17.15",
+    "reflect-metadata": "^0.1.13",
+    "socks-proxy-agent": "^5.0.0",
+    "telegraf": "^3.36.0",
+    "tslib": "~1.10.0",
+    "winston": "^3.2.1"
   }
 }
