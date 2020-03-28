@@ -25,6 +25,7 @@ export class BotService {
 
   private setCommandHandlers(): void {
     this.bot.start(this.commandHandler.startHandler.bind(this.commandHandler))
+    this.bot.command('me', this.commandHandler.me.bind(this.commandHandler))
   }
 
   private initBot(): Telegraf<ContextMessageUpdate> {

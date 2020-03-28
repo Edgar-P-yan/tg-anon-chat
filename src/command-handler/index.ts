@@ -7,4 +7,8 @@ export class CommandHandlerService {
   public async startHandler(ctx: ContextMessageUpdate): Promise<void> {
     await ctx.reply(Strings.hello_msg);
   }
+
+  public async me(ctx: ContextMessageUpdate): Promise<void> {
+    await ctx.reply(JSON.stringify(ctx.from, null, 2))
+  }
 }
