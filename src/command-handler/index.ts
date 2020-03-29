@@ -109,8 +109,8 @@ export class CommandHandlerService {
       throw new Error(`Chat not found for user ${user.id}`);
     }
 
-    (chat.status = ChatStatus.INACTIVE),
-      await this.chatsService.chatsRep.save(chat);
+    chat.status = ChatStatus.INACTIVE;
+    await this.chatsService.chatsRep.save(chat);
 
     chat.firstUser.status = UserStatus.OFFLINE;
     await this.usersService.usersRep.save(chat.firstUser);
