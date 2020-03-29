@@ -38,6 +38,12 @@ export class BotService {
       ctx => this.commandHandler.search(ctx),
     );
 
+    this.bot.command(
+      'stop',
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.stopChat(ctx),
+    );
+
     this.bot.hears(
       () => true,
       (...args) => this.commandHandler.ensureUserMiddleware(...args),

@@ -5,4 +5,5 @@ export const Strings = {
   search_started_msg: 'Search started',
   found_person_msg: 'We found a person! Say him hello :)',
   you_are_not_in_chat_msg: 'You are not in chat',
+  chat_stopped_msg: 'Chat stopped. Use /search to find other people :)',
 };

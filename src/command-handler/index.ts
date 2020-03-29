@@ -76,8 +76,49 @@ export class CommandHandlerService {
     const companion =
       chat.firstUser.id === user.id ? chat.secondUser : chat.firstUser;
 
-    const telegraf = await this.chatsService.getTelegrafInstance();
+    const telegraf = this.chatsService.getTelegrafInstance();
 
     await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
+  }
+
+  @Transactional()
+  async stopChat(ctx: ContextMessageUpdate): Promise<void> {
+    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+    if (user.status !== UserStatus.BUSY) {
+      await ctx.reply(Strings.you_are_not_in_chat_msg);
+      return;
+    }
+
+    const chat = await this.chatsService.chatsRep.findOne({
+      where: [
+        { first_user_id: user.id, status: ChatStatus.ACTIVE },
+        { second_user_id: user.id, status: ChatStatus.ACTIVE },
+      ],
+      relations: ['firstUser', 'secondUser'],
+    });
+
+    if (!chat) {
+      await ctx.reply('Error occurred');
+      throw new Error(`Chat not found for user ${user.id}`);
+    }
+
+    (chat.status = ChatStatus.INACTIVE),
+      await this.chatsService.chatsRep.save(chat);
+
+    chat.firstUser.status = UserStatus.OFFLINE;
+    await this.usersService.usersRep.save(chat.firstUser);
+    chat.secondUser.status = UserStatus.OFFLINE;
+    await this.usersService.usersRep.save(chat.secondUser);
+
+    const telegraf = this.chatsService.getTelegrafInstance();
+
+    await telegraf.telegram.sendMessage(
+      chat.firstUser.tg_id,
+      Strings.chat_stopped_msg,
+    );
+    await telegraf.telegram.sendMessage(
+      chat.secondUser.tg_id,
+      Strings.chat_stopped_msg,
+    );
   }
 }
