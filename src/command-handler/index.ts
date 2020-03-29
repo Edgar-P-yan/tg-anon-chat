@@ -141,6 +141,7 @@ export class CommandHandlerService {
     };
   }
 
+  @Transactional({ propagation: Propagation.SUPPORTS })
   private async handleMessageProxy(
     { companion }: ChatData,
     ctx: ContextMessageUpdate,
