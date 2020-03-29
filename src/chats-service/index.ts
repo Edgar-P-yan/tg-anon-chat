@@ -10,6 +10,7 @@ import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { ChatStatus } from '../constants/ChatStatus.enum';
 import { BotService } from '../bot';
 import { Strings } from '../strings';
+import Telegraf, { ContextMessageUpdate } from 'telegraf';
 
 @injectable()
 export class ChatsService {
@@ -78,5 +79,9 @@ export class ChatsService {
     }
 
     return createdChats;
+  }
+
+  public getTelegrafInstance(): Telegraf<ContextMessageUpdate> {
+    return this.botService.bot;
   }
 }

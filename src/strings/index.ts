@@ -4,4 +4,5 @@ export const Strings = {
     'You are chatting at the moment. Try to stop the conversation before searching',
   search_started_msg: 'Search started',
   found_person_msg: 'We found a person! Say him hello :)',
+  you_are_not_in_chat_msg: 'You are not in chat',
 };

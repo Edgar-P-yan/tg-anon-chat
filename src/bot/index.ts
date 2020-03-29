@@ -37,6 +37,12 @@ export class BotService {
       (...args) => this.commandHandler.ensureUserMiddleware(...args),
       ctx => this.commandHandler.search(ctx),
     );
+
+    this.bot.hears(
+      () => true,
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.messageHandler(ctx),
+    );
   }
 
   private initBot(): Telegraf<ContextMessageUpdate> {

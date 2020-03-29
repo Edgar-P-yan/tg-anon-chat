@@ -6,9 +6,15 @@ import { Types } from '../types';
 import _ from 'lodash';
 import { Transactional } from 'typeorm-transactional-cls-hooked';
 import { UserStatus } from '../constants/UserStatus.enum';
+import { ChatsService } from '../chats-service';
+import { ChatStatus } from '../constants/ChatStatus.enum';
+import { decorators } from '../lib/container';
 
 @injectable()
 export class CommandHandlerService {
+  @decorators.lazyInject(Types.ChatsService)
+  private readonly chatsService: ChatsService;
+
   constructor(
     @inject(Types.UsersService)
     private readonly usersService: UsersService,
@@ -33,7 +39,7 @@ export class CommandHandlerService {
 
     user.status = UserStatus.SEARCHING;
     await this.usersService.usersRep.save(user);
-    ctx.reply(Strings.search_started_msg);
+    await ctx.reply(Strings.search_started_msg);
   }
 
   async ensureUserMiddleware(
@@ -45,5 +51,33 @@ export class CommandHandlerService {
       ctx.session.userId = user.id;
     }
     await next();
+  }
+
+  async messageHandler(ctx: ContextMessageUpdate): Promise<void> {
+    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+    if (user.status !== UserStatus.BUSY) {
+      await ctx.reply(Strings.you_are_not_in_chat_msg);
+      return;
+    }
+
+    const chat = await this.chatsService.chatsRep.findOne({
+      where: [
+        { first_user_id: user.id, status: ChatStatus.ACTIVE },
+        { second_user_id: user.id, status: ChatStatus.ACTIVE },
+      ],
+      relations: ['firstUser', 'secondUser'],
+    });
+
+    if (!chat) {
+      await ctx.reply('Error occurred');
+      throw new Error(`Chat not found for user ${user.id}`);
+    }
+
+    const companion =
+      chat.firstUser.id === user.id ? chat.secondUser : chat.firstUser;
+
+    const telegraf = await this.chatsService.getTelegrafInstance();
+
+    await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
   }
 }
