@@ -84,6 +84,13 @@ export class CommandHandlerService {
   @Transactional()
   async stopChat(ctx: ContextMessageUpdate): Promise<void> {
     const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+    if (user.status === UserStatus.SEARCHING) {
+      user.status = UserStatus.OFFLINE;
+      await this.usersService.usersRep.save(user);
+      await ctx.reply(Strings.stop_search_msg);
+      return;
+    }
+
     if (user.status !== UserStatus.BUSY) {
       await ctx.reply(Strings.you_are_not_in_chat_msg);
       return;
