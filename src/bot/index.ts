@@ -48,8 +48,8 @@ export class BotService {
       ctx => this.commandHandler.stopChat(ctx),
     );
 
-    this.bot.hears(
-      () => true,
+    this.bot.on(
+      ['text'],
       (...args) => this.commandHandler.ensureUserMiddleware(...args),
       ctx => this.commandHandler.messageHandler(ctx),
     );

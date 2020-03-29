@@ -5,4 +5,5 @@ export const Types = {
   Logger: Symbol.for('Logger'),
   UsersService: Symbol.for('UsersService'),
   ChatsService: Symbol.for('ChatsService'),
+  MessagesService: Symbol.for('MessagesService'),
 };

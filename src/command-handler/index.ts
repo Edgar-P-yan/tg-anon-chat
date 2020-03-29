@@ -9,6 +9,7 @@ import { UserStatus } from '../constants/UserStatus.enum';
 import { ChatsService } from '../chats-service';
 import { ChatStatus } from '../constants/ChatStatus.enum';
 import { decorators } from '../lib/container';
+import { MessagesService } from '../messages';
 
 @injectable()
 export class CommandHandlerService {
@@ -18,6 +19,8 @@ export class CommandHandlerService {
   constructor(
     @inject(Types.UsersService)
     private readonly usersService: UsersService,
+    @inject(Types.MessagesService)
+    private readonly messagesService: MessagesService,
   ) {}
 
   public async startHandler(ctx: ContextMessageUpdate): Promise<void> {
@@ -77,6 +80,8 @@ export class CommandHandlerService {
       chat.firstUser.id === user.id ? chat.secondUser : chat.firstUser;
 
     const telegraf = this.chatsService.getTelegrafInstance();
+
+    await this.messagesService.saveMessage(user, chat, ctx.message);
 
     await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
   }

@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import { UsersService } from './users';
 import { ChatsService } from './chats-service';
 import { container } from './lib/container';
+import { MessagesService } from './messages';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ container.bind(Types.Logger).toDynamicValue(loggerDynamicValueFactory);
 container.bind(Types.CommandHandler).to(CommandHandlerService);
 container.bind(Types.UsersService).to(UsersService);
 container.bind(Types.ChatsService).to(ChatsService);
+container.bind(Types.MessagesService).to(MessagesService);
 container.bind(Types.Bot).to(BotService);
 
 export { container };
