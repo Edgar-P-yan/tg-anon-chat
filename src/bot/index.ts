@@ -30,7 +30,11 @@ export class BotService {
       ctx => this.commandHandler.startHandler(ctx),
     );
 
-    this.bot.command('me', ctx => this.commandHandler.me(ctx));
+    this.bot.command(
+      'me',
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.me(ctx),
+    );
 
     this.bot.command(
       'search',
