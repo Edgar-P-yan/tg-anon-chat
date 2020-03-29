@@ -54,19 +54,19 @@ export class Chats1585421252090 implements MigrationInterface {
           },
           {
             name: 'first_user_id',
-            type: 'number',
+            type: 'integer',
             isNullable: false,
           },
           {
             name: 'second_user_id',
-            type: 'number',
+            type: 'integer',
             isNullable: false,
           },
           {
             name: 'status',
             type: 'varchar',
             isNullable: false,
-            default: 'INACTIVE',
+            default: "'INACTIVE'",
           },
         ],
       }),
