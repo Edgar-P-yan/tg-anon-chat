@@ -4,12 +4,14 @@ import { Strings } from '../strings';
 import { UsersService } from '../users';
 import { Types } from '../types';
 import _ from 'lodash';
-import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { Transactional, Propagation } from 'typeorm-transactional-cls-hooked';
 import { UserStatus } from '../constants/UserStatus.enum';
 import { ChatsService } from '../chats-service';
 import { ChatStatus } from '../constants/ChatStatus.enum';
 import { decorators } from '../lib/container';
 import { MessagesService } from '../messages';
+import { User } from '../users/User.entity';
+import { Chat } from '../chats-service/Chat.entity';
 
 @injectable()
 export class CommandHandlerService {
@@ -56,28 +58,19 @@ export class CommandHandlerService {
     await next();
   }
 
+  @Transactional()
   async messageHandler(ctx: ContextMessageUpdate): Promise<void> {
-    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+    const { user, companion, chat } = await this.getCurrentChatData(ctx);
+
     if (user.status !== UserStatus.BUSY) {
       await ctx.reply(Strings.you_are_not_in_chat_msg);
-      return;
+      return null;
     }
 
-    const chat = await this.chatsService.chatsRep.findOne({
-      where: [
-        { first_user_id: user.id, status: ChatStatus.ACTIVE },
-        { second_user_id: user.id, status: ChatStatus.ACTIVE },
-      ],
-      relations: ['firstUser', 'secondUser'],
-    });
-
-    if (!chat) {
+    if (!chat || !companion) {
       await ctx.reply('Error occurred');
       throw new Error(`Chat not found for user ${user.id}`);
     }
-
-    const companion =
-      chat.firstUser.id === user.id ? chat.secondUser : chat.firstUser;
 
     const telegraf = this.chatsService.getTelegrafInstance();
 
@@ -88,7 +81,8 @@ export class CommandHandlerService {
 
   @Transactional()
   async stopChat(ctx: ContextMessageUpdate): Promise<void> {
-    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+    const { user, chat, companion } = await this.getCurrentChatData(ctx);
+
     if (user.status === UserStatus.SEARCHING) {
       user.status = UserStatus.OFFLINE;
       await this.usersService.usersRep.save(user);
@@ -101,6 +95,39 @@ export class CommandHandlerService {
       return;
     }
 
+    if (!chat || !companion) {
+      await ctx.reply('Error occurred');
+      throw new Error(`Chat not found for user ${user.id}`);
+    }
+
+    chat.status = ChatStatus.INACTIVE;
+    await this.chatsService.chatsRep.save(chat);
+
+    user.status = UserStatus.OFFLINE;
+    await this.usersService.usersRep.save(user);
+
+    companion.status = UserStatus.OFFLINE;
+    await this.usersService.usersRep.save(companion);
+
+    const telegraf = this.chatsService.getTelegrafInstance();
+
+    await telegraf.telegram.sendMessage(user.tg_id, Strings.chat_stopped_msg);
+    await telegraf.telegram.sendMessage(
+      companion.tg_id,
+      Strings.chat_stopped_msg,
+    );
+  }
+
+  @Transactional({ propagation: Propagation.SUPPORTS })
+  private async getCurrentChatData(
+    ctx: ContextMessageUpdate,
+  ): Promise<{
+    user: User;
+    companion?: User | null;
+    chat?: Chat | null;
+  }> {
+    const user = await this.usersService.usersRep.findOne(ctx.session.userId);
+
     const chat = await this.chatsService.chatsRep.findOne({
       where: [
         { first_user_id: user.id, status: ChatStatus.ACTIVE },
@@ -109,28 +136,16 @@ export class CommandHandlerService {
       relations: ['firstUser', 'secondUser'],
     });
 
-    if (!chat) {
-      await ctx.reply('Error occurred');
-      throw new Error(`Chat not found for user ${user.id}`);
-    }
+    const companion = chat
+      ? chat.firstUser.id === user.id
+        ? chat.secondUser
+        : chat.firstUser
+      : null;
 
-    chat.status = ChatStatus.INACTIVE;
-    await this.chatsService.chatsRep.save(chat);
-
-    chat.firstUser.status = UserStatus.OFFLINE;
-    await this.usersService.usersRep.save(chat.firstUser);
-    chat.secondUser.status = UserStatus.OFFLINE;
-    await this.usersService.usersRep.save(chat.secondUser);
-
-    const telegraf = this.chatsService.getTelegrafInstance();
-
-    await telegraf.telegram.sendMessage(
-      chat.firstUser.tg_id,
-      Strings.chat_stopped_msg,
-    );
-    await telegraf.telegram.sendMessage(
-      chat.secondUser.tg_id,
-      Strings.chat_stopped_msg,
-    );
+    return {
+      user,
+      companion: companion || null,
+      chat: chat || null,
+    };
   }
 }
