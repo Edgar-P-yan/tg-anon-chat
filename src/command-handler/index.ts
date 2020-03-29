@@ -10,8 +10,7 @@ import { ChatsService } from '../chats-service';
 import { ChatStatus } from '../constants/ChatStatus.enum';
 import { decorators } from '../lib/container';
 import { MessagesService } from '../messages';
-import { User } from '../users/User.entity';
-import { Chat } from '../chats-service/Chat.entity';
+import { ChatData } from './interfaces/ChatData.interface';
 
 @injectable()
 export class CommandHandlerService {
@@ -72,11 +71,8 @@ export class CommandHandlerService {
       throw new Error(`Chat not found for user ${user.id}`);
     }
 
-    const telegraf = this.chatsService.getTelegrafInstance();
-
     await this.messagesService.saveMessage(user, chat, ctx.message);
-
-    await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
+    await this.handleMessageProxy({ user, chat, companion }, ctx);
   }
 
   @Transactional()
@@ -121,11 +117,7 @@ export class CommandHandlerService {
   @Transactional({ propagation: Propagation.SUPPORTS })
   private async getCurrentChatData(
     ctx: ContextMessageUpdate,
-  ): Promise<{
-    user: User;
-    companion?: User | null;
-    chat?: Chat | null;
-  }> {
+  ): Promise<ChatData> {
     const user = await this.usersService.usersRep.findOne(ctx.session.userId);
 
     const chat = await this.chatsService.chatsRep.findOne({
@@ -147,5 +139,36 @@ export class CommandHandlerService {
       companion: companion || null,
       chat: chat || null,
     };
+  }
+
+  private async handleMessageProxy(
+    { companion }: ChatData,
+    ctx: ContextMessageUpdate,
+  ): Promise<void> {
+    const telegraf = this.chatsService.getTelegrafInstance();
+
+    ctx.updateSubTypes[0];
+
+    if (ctx.updateSubTypes[0] === 'photo') {
+      await telegraf.telegram.sendPhoto(
+        companion.tg_id,
+        _.last(ctx.message.photo).file_id,
+        {
+          caption: ctx.message.caption,
+        },
+      );
+    } else if (ctx.updateSubTypes[0] === 'text') {
+      await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
+    } else if (ctx.updateSubTypes[0] === 'sticker') {
+      await telegraf.telegram.sendSticker(
+        companion.tg_id,
+        ctx.message.sticker.file_id,
+      );
+    } else {
+      await telegraf.telegram.sendMessage(
+        companion.tg_id,
+        ctx.message.caption || Strings.unknown_message_format_msg,
+      );
+    }
   }
 }

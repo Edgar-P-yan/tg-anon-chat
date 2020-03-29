@@ -49,7 +49,7 @@ export class BotService {
     );
 
     this.bot.on(
-      ['text'],
+      ['text', 'photo', 'sticker'],
       (...args) => this.commandHandler.ensureUserMiddleware(...args),
       ctx => this.commandHandler.messageHandler(ctx),
     );

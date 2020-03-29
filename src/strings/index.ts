@@ -10,4 +10,5 @@ export const Strings = {
     '👩🏼‍🏫 You are not in chat. Click /search to find a companion',
   chat_stopped_msg: '👩🏼‍🏫 Chat stopped. Use /search to find other people :)',
   stop_search_msg: '👩🏼‍🏫 Search stopped. Use /search to find other people :)',
+  unknown_message_format_msg: '👩🏼‍🏫 Unknown message format',
 };
