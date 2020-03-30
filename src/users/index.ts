@@ -7,10 +7,7 @@ import { Transactional, Propagation } from 'typeorm-transactional-cls-hooked';
 
 @injectable()
 export class UsersService {
-  public readonly usersRep: UsersRepository;
-  constructor() {
-    this.usersRep = getCustomRepository(UsersRepository);
-  }
+  public readonly usersRep = getCustomRepository(UsersRepository);
 
   @Transactional({ propagation: Propagation.SUPPORTS })
   async ensureUser(tgUser: TelegramUser): Promise<User> {

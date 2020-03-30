@@ -14,15 +14,13 @@ import Telegraf, { ContextMessageUpdate } from 'telegraf';
 
 @injectable()
 export class ChatsService {
-  public readonly chatsRep: ChatsRepository;
-  constructor(
-    @inject(Types.UsersService)
-    private readonly usersService: UsersService,
-    @inject(Types.Bot)
-    private readonly botService: BotService,
-  ) {
-    this.chatsRep = getCustomRepository(ChatsRepository);
-  }
+  @inject(Types.UsersService)
+  private readonly usersService: UsersService;
+
+  @inject(Types.Bot)
+  private readonly botService: BotService;
+
+  public readonly chatsRep = getCustomRepository(ChatsRepository);
 
   @Transactional()
   public async findPairsAndCreateChats(): Promise<Chat[]> {

@@ -8,7 +8,7 @@ import { User } from '../users/User.entity';
 
 @injectable()
 export class ReportsService {
-  public reportsRep = getCustomRepository(ReportsRepository);
+  public readonly reportsRep = getCustomRepository(ReportsRepository);
 
   @Transactional({ propagation: Propagation.SUPPORTS })
   async createReport(reporter: User, chat: Chat): Promise<Report> {

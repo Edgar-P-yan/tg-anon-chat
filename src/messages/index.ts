@@ -9,10 +9,7 @@ import { Transactional, Propagation } from 'typeorm-transactional-cls-hooked';
 
 @injectable()
 export class MessagesService {
-  public readonly messagesRep: MessagesRepository;
-  constructor() {
-    this.messagesRep = getCustomRepository(MessagesRepository);
-  }
+  public readonly messagesRep = getCustomRepository(MessagesRepository);
 
   @Transactional({ propagation: Propagation.SUPPORTS })
   async saveMessage(
