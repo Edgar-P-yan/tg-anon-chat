@@ -1,5 +1,5 @@
-voice;
-video_note;
+0, voice;
+0, video_note;
 0, video;
 venue;
 0, text;
@@ -22,7 +22,7 @@ game;
 // delete_chat_photo
 contact;
 // channel_chat_created
-audio;
+0, audio;
 // passport_data
 // connected_website
 0, animation;

@@ -13,4 +13,5 @@ export const Strings = {
   unknown_message_format_msg: '🤖 Unknown message format',
   unknown_error_msg: '🤖 Error occurred. We are sorry... Try one more time',
   forwarded_from_msg: '🤖 Forwarded from',
+  report_created_msg: '🤖 Reported :) you can now /stop the conversation',
 };

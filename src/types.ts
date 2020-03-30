@@ -6,4 +6,5 @@ export const Types = {
   UsersService: Symbol.for('UsersService'),
   ChatsService: Symbol.for('ChatsService'),
   MessagesService: Symbol.for('MessagesService'),
+  ReportsService: Symbol.for('ReportsService'),
 };

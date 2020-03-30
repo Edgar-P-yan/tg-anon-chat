@@ -50,6 +50,12 @@ export class BotService {
       ctx => this.commandHandler.stopChat(ctx),
     );
 
+    this.bot.command(
+      'report',
+      (...args) => this.commandHandler.ensureUserMiddleware(...args),
+      ctx => this.commandHandler.report(ctx),
+    );
+
     this.bot.on(
       [
         'text',

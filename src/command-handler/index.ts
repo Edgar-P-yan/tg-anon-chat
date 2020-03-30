@@ -12,18 +12,21 @@ import { decorators } from '../lib/container';
 import { MessagesService } from '../messages';
 import { ChatData } from './interfaces/ChatData.interface';
 import { TelegramBotError } from '../errors';
+import { ReportsService } from '../reports';
 
 @injectable()
 export class CommandHandlerService {
   @decorators.lazyInject(Types.ChatsService)
   private readonly chatsService: ChatsService;
 
-  constructor(
-    @inject(Types.UsersService)
-    private readonly usersService: UsersService,
-    @inject(Types.MessagesService)
-    private readonly messagesService: MessagesService,
-  ) {}
+  @inject(Types.UsersService)
+  private readonly usersService: UsersService;
+
+  @inject(Types.MessagesService)
+  private readonly messagesService: MessagesService;
+
+  @inject(Types.ReportsService)
+  private readonly reportsService: ReportsService;
 
   public async startHandler(ctx: ContextMessageUpdate): Promise<void> {
     await ctx.reply(Strings.hello_msg);
@@ -31,6 +34,16 @@ export class CommandHandlerService {
 
   public async me(ctx: ContextMessageUpdate): Promise<void> {
     await ctx.reply(JSON.stringify(ctx.from, null, 2));
+  }
+
+  public async report(ctx: ContextMessageUpdate): Promise<void> {
+    const { user, chat, companion } = await this.getCurrentChatData(ctx);
+    if (!chat || !companion) {
+      throw new TelegramBotError(Strings.you_are_not_in_chat_msg);
+    }
+
+    await this.reportsService.createReport(user, chat);
+    await ctx.reply(Strings.report_created_msg);
   }
 
   @Transactional()
