@@ -51,7 +51,16 @@ export class BotService {
     );
 
     this.bot.on(
-      ['text', 'photo', 'sticker', 'video', 'document', 'animation'],
+      [
+        'text',
+        'photo',
+        'sticker',
+        'video',
+        'document',
+        'animation',
+        'voice',
+        'video_note',
+      ],
       (...args) => this.commandHandler.ensureUserMiddleware(...args),
       ctx => this.commandHandler.messageHandler(ctx),
     );

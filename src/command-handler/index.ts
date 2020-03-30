@@ -150,9 +150,7 @@ export class CommandHandlerService {
       await telegraf.telegram.sendPhoto(
         companion.tg_id,
         _.last(ctx.message.photo).file_id,
-        {
-          caption: ctx.message.caption,
-        },
+        { caption: ctx.message.caption },
       );
     } else if (ctx.updateSubTypes[0] === 'text') {
       await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
@@ -181,9 +179,7 @@ export class CommandHandlerService {
       await telegraf.telegram.sendAnimation(
         companion.tg_id,
         ctx.message.animation.file_id,
-        {
-          caption: ctx.message.caption,
-        },
+        { caption: ctx.message.caption },
       );
     } else if (ctx.updateSubTypes[0] === 'document') {
       await telegraf.telegram.sendDocument(
@@ -192,6 +188,22 @@ export class CommandHandlerService {
         {
           caption: ctx.message.caption,
           thumb: ctx.message.document.thumb?.file_id,
+        },
+      );
+    } else if (ctx.updateSubTypes[0] === 'voice') {
+      await telegraf.telegram.sendVoice(
+        companion.tg_id,
+        ctx.message.voice.file_id,
+        { caption: ctx.message.caption },
+      );
+    } else if (ctx.updateSubTypes[0] === 'video_note') {
+      /** @todo use "real" method when telegraf adds typings */
+      await telegraf.telegram['sendVideoNote'](
+        companion.tg_id,
+        ctx.message.video_note.file_id,
+        {
+          caption: ctx.message.caption,
+          thumb: ctx.message.video_note.thumb?.file_id,
         },
       );
     } else {
