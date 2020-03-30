@@ -60,6 +60,7 @@ export class BotService {
         'animation',
         'voice',
         'video_note',
+        'audio',
       ],
       (...args) => this.commandHandler.ensureUserMiddleware(...args),
       ctx => this.commandHandler.messageHandler(ctx),

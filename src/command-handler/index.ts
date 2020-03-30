@@ -204,6 +204,14 @@ export class CommandHandlerService {
         ctx.message.voice.file_id,
         { caption },
       );
+    } else if (_.includes(ctx.updateSubTypes, 'audio')) {
+      await telegraf.telegram.sendAudio(
+        companion.tg_id,
+        ctx.message.audio.file_id,
+        {
+          caption,
+        },
+      );
     } else if (_.includes(ctx.updateSubTypes, 'video_note')) {
       /** @todo use "real" method when telegraf adds typings */
       await telegraf.telegram['sendVideoNote'](
