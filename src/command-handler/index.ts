@@ -11,6 +11,7 @@ import { ChatStatus } from '../constants/ChatStatus.enum';
 import { decorators } from '../lib/container';
 import { MessagesService } from '../messages';
 import { ChatData } from './interfaces/ChatData.interface';
+import { TelegramBotError } from '../errors';
 
 @injectable()
 export class CommandHandlerService {
@@ -67,7 +68,6 @@ export class CommandHandlerService {
     }
 
     if (!chat || !companion) {
-      await ctx.reply('Error occurred');
       throw new Error(`Chat not found for user ${user.id}`);
     }
 
@@ -87,12 +87,10 @@ export class CommandHandlerService {
     }
 
     if (user.status !== UserStatus.BUSY) {
-      await ctx.reply(Strings.you_are_not_in_chat_msg);
-      return;
+      throw new TelegramBotError(Strings.you_are_not_in_chat_msg);
     }
 
     if (!chat || !companion) {
-      await ctx.reply('Error occurred');
       throw new Error(`Chat not found for user ${user.id}`);
     }
 
@@ -147,8 +145,6 @@ export class CommandHandlerService {
     ctx: ContextMessageUpdate,
   ): Promise<void> {
     const telegraf = this.chatsService.getTelegrafInstance();
-
-    ctx.updateSubTypes[0];
 
     if (ctx.updateSubTypes[0] === 'photo') {
       await telegraf.telegram.sendPhoto(

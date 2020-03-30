@@ -7,6 +7,8 @@ import { botClsNs } from '../lib/bot-cls-ns';
 import { ConfigService } from '../config';
 import { CommandHandlerService } from '../command-handler';
 import session from 'telegraf/session';
+import { TelegramBotError } from '../errors';
+import { Strings } from '../strings';
 
 @injectable()
 export class BotService {
@@ -58,8 +60,14 @@ export class BotService {
   private initBot(): Telegraf<ContextMessageUpdate> {
     const bot = this.createTelegramBot();
 
-    bot.catch((error: any) => {
-      this.logger.error({ error });
+    bot.catch(async (error: any, ctx: ContextMessageUpdate) => {
+      if (error instanceof TelegramBotError) {
+        await ctx.reply(error.message);
+        return;
+      }
+      await ctx.reply(Strings.unknown_error_msg);
+      this.logger.error('Error occurred', { error, ctx });
+      throw error;
     });
 
     bot.use((ctx, next) => {
