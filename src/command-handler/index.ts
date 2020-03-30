@@ -165,6 +165,15 @@ export class CommandHandlerService {
         companion.tg_id,
         ctx.message.sticker.file_id,
       );
+    } else if (ctx.updateSubTypes[0] === 'video') {
+      await telegraf.telegram.sendVideo(
+        companion.tg_id,
+        ctx.message.video.file_id,
+        {
+          caption: ctx.message.caption,
+          thumb: ctx.message.video.thumb?.file_id,
+        },
+      );
     } else {
       await telegraf.telegram.sendMessage(
         companion.tg_id,
