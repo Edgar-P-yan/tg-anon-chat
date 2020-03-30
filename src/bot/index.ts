@@ -76,7 +76,6 @@ export class BotService {
       }
       await ctx.reply(Strings.unknown_error_msg);
       this.logger.error('Error occurred', { error, ctx });
-      throw error;
     });
 
     bot.use((ctx, next) => {
