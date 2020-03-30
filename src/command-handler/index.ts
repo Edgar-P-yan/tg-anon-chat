@@ -170,6 +170,30 @@ export class CommandHandlerService {
           thumb: ctx.message.video.thumb?.file_id,
         },
       );
+    } else if (_.includes(ctx.updateSubTypes, 'animation')) {
+      /**
+       * check for 'animation' with 'include' and before checking
+       * for 'document', because for backward compatibility, when
+       * this field is set, the document field will also be set
+       * @see https://core.telegram.org/bots/api#message
+       */
+
+      await telegraf.telegram.sendAnimation(
+        companion.tg_id,
+        ctx.message.animation.file_id,
+        {
+          caption: ctx.message.caption,
+        },
+      );
+    } else if (ctx.updateSubTypes[0] === 'document') {
+      await telegraf.telegram.sendDocument(
+        companion.tg_id,
+        ctx.message.document.file_id,
+        {
+          caption: ctx.message.caption,
+          thumb: ctx.message.document.thumb?.file_id,
+        },
+      );
     } else {
       await telegraf.telegram.sendMessage(
         companion.tg_id,
