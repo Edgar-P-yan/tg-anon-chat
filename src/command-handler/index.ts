@@ -146,25 +146,33 @@ export class CommandHandlerService {
   ): Promise<void> {
     const telegraf = this.chatsService.getTelegrafInstance();
 
-    if (ctx.updateSubTypes[0] === 'photo') {
+    const forwardInfoPrefix = this._formatForwardInfoPrefix(ctx);
+    const caption = ctx.message.caption
+      ? forwardInfoPrefix + ctx.message.caption
+      : forwardInfoPrefix;
+
+    if (_.includes(ctx.updateSubTypes, 'photo')) {
       await telegraf.telegram.sendPhoto(
         companion.tg_id,
         _.last(ctx.message.photo).file_id,
-        { caption: ctx.message.caption },
+        { caption },
       );
-    } else if (ctx.updateSubTypes[0] === 'text') {
-      await telegraf.telegram.sendMessage(companion.tg_id, ctx.message.text);
-    } else if (ctx.updateSubTypes[0] === 'sticker') {
+    } else if (_.includes(ctx.updateSubTypes, 'text')) {
+      await telegraf.telegram.sendMessage(
+        companion.tg_id,
+        forwardInfoPrefix + (ctx.message.text || ''),
+      );
+    } else if (_.includes(ctx.updateSubTypes, 'sticker')) {
       await telegraf.telegram.sendSticker(
         companion.tg_id,
         ctx.message.sticker.file_id,
       );
-    } else if (ctx.updateSubTypes[0] === 'video') {
+    } else if (_.includes(ctx.updateSubTypes, 'video')) {
       await telegraf.telegram.sendVideo(
         companion.tg_id,
         ctx.message.video.file_id,
         {
-          caption: ctx.message.caption,
+          caption,
           thumb: ctx.message.video.thumb?.file_id,
         },
       );
@@ -179,38 +187,62 @@ export class CommandHandlerService {
       await telegraf.telegram.sendAnimation(
         companion.tg_id,
         ctx.message.animation.file_id,
-        { caption: ctx.message.caption },
+        { caption },
       );
-    } else if (ctx.updateSubTypes[0] === 'document') {
+    } else if (_.includes(ctx.updateSubTypes, 'document')) {
       await telegraf.telegram.sendDocument(
         companion.tg_id,
         ctx.message.document.file_id,
         {
-          caption: ctx.message.caption,
+          caption,
           thumb: ctx.message.document.thumb?.file_id,
         },
       );
-    } else if (ctx.updateSubTypes[0] === 'voice') {
+    } else if (_.includes(ctx.updateSubTypes, 'voice')) {
       await telegraf.telegram.sendVoice(
         companion.tg_id,
         ctx.message.voice.file_id,
-        { caption: ctx.message.caption },
+        { caption },
       );
-    } else if (ctx.updateSubTypes[0] === 'video_note') {
+    } else if (_.includes(ctx.updateSubTypes, 'video_note')) {
       /** @todo use "real" method when telegraf adds typings */
       await telegraf.telegram['sendVideoNote'](
         companion.tg_id,
         ctx.message.video_note.file_id,
         {
-          caption: ctx.message.caption,
+          caption,
           thumb: ctx.message.video_note.thumb?.file_id,
         },
       );
     } else {
-      await telegraf.telegram.sendMessage(
-        companion.tg_id,
-        ctx.message.caption || Strings.unknown_message_format_msg,
-      );
+      throw new TelegramBotError(Strings.unknown_message_format_msg);
     }
+  }
+
+  private _formatForwardInfoPrefix(ctx: ContextMessageUpdate): string {
+    let forwardInfoPrefix = '';
+
+    const getFullName = (subject: {
+      first_name?: string;
+      last_name?: string;
+    }): string =>
+      (subject.first_name || '') +
+      (subject.first_name && subject.last_name ? ' ' : '') +
+      (subject.last_name || '');
+
+    if (_.includes(ctx.updateSubTypes, 'forward')) {
+      const forwardedFromName =
+        ctx.message['forward_sender_name'] ||
+        (ctx.message.forward_from
+          ? getFullName(ctx.message.forward_from)
+          : ctx.message.forward_from_chat
+          ? ctx.message.forward_from_chat.title ||
+            getFullName(ctx.message.forward_from_chat)
+          : '');
+
+      forwardInfoPrefix += `${Strings.forwarded_from_msg} ${forwardedFromName} \n`;
+    }
+
+    return forwardInfoPrefix;
   }
 }
