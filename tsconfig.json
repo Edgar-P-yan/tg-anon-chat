@@ -22,5 +22,5 @@
     "esModuleInterop": true,
     "outDir": "dist"
   },
-  "include": ["src/**/*", "__tests__/**/*"]
+  "include": ["src/**/*"]
 }

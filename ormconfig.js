@@ -14,7 +14,7 @@ module.exports = {
   database: DB_NAME,
   entities: ['dist/**/*.entity.js'],
   migrationsTableName: 'migrations',
-  migrations: ['dist/src/migrations/*.js'],
+  migrations: ['dist/migrations/*.js'],
   cli: {
     migrationsDir: 'src/migrations',
   },
