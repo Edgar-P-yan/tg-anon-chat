@@ -7,6 +7,7 @@
   },
   "private": true,
   "devDependencies": {
+    "@types/hapi__joi": "^16.0.12",
     "@types/jest": "~25.1.2",
     "@types/lodash": "^4.14.149",
     "@types/node": "~12.12.27",
@@ -32,6 +33,7 @@
   },
   "author": "Edgar Poghosyan <starguitar307@gmail.com>",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "cls-hooked": "^4.2.2",
     "delay": "^4.3.0",
     "dotenv": "^8.2.0",
@@ -42,6 +44,7 @@
     "reflect-metadata": "^0.1.13",
     "socks-proxy-agent": "^5.0.0",
     "telegraf": "^3.37.0",
+    "telegraf-session-redis": "^5.1.0",
     "tslib": "~1.10.0",
     "typeorm": "^0.2.24",
     "typeorm-transactional-cls-hooked": "^0.1.12",

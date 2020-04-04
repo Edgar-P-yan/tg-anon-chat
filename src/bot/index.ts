@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import Telegraf, { ContextMessageUpdate } from 'telegraf';
+import Telegraf, { ContextMessageUpdate, Middleware } from 'telegraf';
 import createSocksProxyAgent from 'socks-proxy-agent';
 import winston from 'winston';
 import { Types } from '../types';
@@ -9,6 +9,7 @@ import { CommandHandlerService } from '../command-handler';
 import session from 'telegraf/session';
 import { TelegramBotError } from '../errors';
 import { Strings } from '../strings';
+import RedisSession from 'telegraf-session-redis';
 
 @injectable()
 export class BotService {
@@ -92,7 +93,20 @@ export class BotService {
       });
     });
 
-    bot.use(session());
+    let sessionMiddleware: Middleware<ContextMessageUpdate> = null;
+
+    if (this.config.get('SESSION_STORAGE') === 'redis') {
+      sessionMiddleware = new RedisSession({
+        store: {
+          url: this.config.get('REDIS_URL'),
+          prefix: 'tg-anon-chat-0:',
+        } as any,
+      }).middleware();
+    } else {
+      sessionMiddleware = session();
+    }
+
+    bot.use(sessionMiddleware);
 
     return bot;
   }
