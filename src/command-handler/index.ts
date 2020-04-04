@@ -226,12 +226,10 @@ export class CommandHandlerService {
         },
       );
     } else if (_.includes(ctx.updateSubTypes, 'video_note')) {
-      /** @todo use "real" method when telegraf adds typings */
-      await telegraf.telegram['sendVideoNote'](
+      await telegraf.telegram.sendVideoNote(
         companion.tg_id,
         ctx.message.video_note.file_id,
         {
-          caption,
           thumb: ctx.message.video_note.thumb?.file_id,
         },
       );
