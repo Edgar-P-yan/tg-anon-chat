@@ -1,17 +1,20 @@
 export const Strings = {
   hello_msg:
-    '🤖 Welcome to anon chat! \n Click /search to find a person to chat with',
-  stop_first_msg:
-    '🤖 You are chatting at the moment. Click /stop to stop the conversation before searching',
-  search_started_msg: '🤖 Search started',
+    '🤖 Добро пожаловать в анонимный чат! \n Нажмите /search чтобы найти собеседника :)',
+  stop_first_msg: '🤖 Остановите сначала текущий диалог нажав /stop',
+  search_started_msg: '🤖 Поиск собеседника начат',
   found_person_msg:
-    '🤖 We found a person! Say him hello :) \n Click /stop to stop the conversation',
+    '🤖 Собеседник нашелся! Напишите привет! :) \n Нажмите /stop чтобы остановить диалог \n Нажмите /report чтобы пожаловаться',
   you_are_not_in_chat_msg:
-    '🤖 You are not in chat. Click /search to find a companion',
-  chat_stopped_msg: '🤖 Chat stopped. Use /search to find other people :)',
-  stop_search_msg: '🤖 Search stopped. Use /search to find other people :)',
-  unknown_message_format_msg: '🤖 Unknown message format',
-  unknown_error_msg: '🤖 Error occurred. We are sorry... Try one more time',
-  forwarded_from_msg: '🤖 Forwarded from',
-  report_created_msg: '🤖 Reported :) you can now /stop the conversation',
+    '🤖 Вы не в диалоге. Нажмите /search чтобы найти собеседника :)',
+  chat_stopped_msg:
+    '🤖 Диалог остановлен. Нажмите /search чтобы найти другого собеседника :)',
+  stop_search_msg:
+    '🤖 Поиск остановлен. Нажмите /search чтобы найти другого собеседника :)',
+  unknown_message_format_msg: '🤖 Неизвестный формат сообщения',
+  unknown_error_msg:
+    '🤖 Произошла ошибка. Просим проявить терпение и попробовать еще раз :)',
+  forwarded_from_msg: '🤖 Переслано от',
+  report_created_msg:
+    '🤖 Жалоба отправлена :) Нажмите /stop чтобы остановить диалог',
 };
