@@ -39,6 +39,10 @@ export class ConfigService {
           .required(),
         otherwise: Joi.any().strip(),
       }),
+
+      MIGRATIONS_AUTO_RUN: Joi.boolean()
+        .optional()
+        .default(false),
     })
       .options({
         stripUnknown: true,

@@ -12,4 +12,6 @@ export interface ConfigVars {
 
   SESSION_STORAGE: 'memory' | 'redis';
   REDIS_URL?: string;
+
+  MIGRATIONS_AUTO_RUN: boolean;
 }

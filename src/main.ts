@@ -7,12 +7,25 @@ import { initializeTransactionalContext } from 'typeorm-transactional-cls-hooked
 import * as typeorm from 'typeorm';
 import { ChatsService } from './chats-service';
 import delay from 'delay';
+import { ConfigService } from './config';
+import { runMigrations } from './lib/run-migrations';
 
 async function bootstrap(): Promise<void> {
+  const configService = container.get<ConfigService>(Types.Config);
+  const logger = container.get<winston.Logger>(Types.Logger);
+
+  if (configService.get('MIGRATIONS_AUTO_RUN')) {
+    logger.info('Running migrations');
+    await runMigrations();
+    logger.info('Migrations run complete');
+  } else {
+    logger.info('Migrations auto-run is disabled');
+  }
+
   initializeTransactionalContext();
+
   await typeorm.createConnection();
 
-  const logger = container.get<winston.Logger>(Types.Logger);
   const botService = container.get<BotService>(Types.Bot);
   const chatsService = container.get<ChatsService>(Types.ChatsService);
 

@@ -31,3 +31,4 @@ dist/
 
 # Configs
 .env
+*.env
