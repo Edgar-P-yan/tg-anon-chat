@@ -17,6 +17,31 @@ export class ConfigService {
   private validate(envVars: NodeJS.ProcessEnv): ConfigVars {
     const { value, error } = Joi.object({
       BOT_TOKEN: Joi.string().required(),
+
+      WEB_HOOKS: Joi.boolean()
+        .optional()
+        .default(false),
+
+      PORT: Joi.when('WEB_HOOKS', {
+        is: true,
+        then: Joi.number()
+          .port()
+          .required(),
+        otherwise: Joi.any().strip(),
+      }),
+
+      WEB_HOOKS_SECRET_URL: Joi.when('WEB_HOOKS', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.any().strip(),
+      }),
+
+      WEB_HOOKS_PATH: Joi.when('WEB_HOOKS', {
+        is: true,
+        then: Joi.string().required(),
+        otherwise: Joi.any().strip(),
+      }),
+
       SOCKS_PROXY: Joi.string()
         .uri()
         .optional(),

@@ -37,9 +37,23 @@ async function bootstrap(): Promise<void> {
     }
   })().catch(console.error);
 
-  await botService.bot.launch();
+  if (configService.get('WEB_HOOKS')) {
+    await botService.bot.telegram.setWebhook(
+      configService.get('WEB_HOOKS_SECRET_URL'),
+    );
 
-  logger.info('Bot launched');
+    botService.bot.startWebhook(
+      configService.get('WEB_HOOKS_PATH'),
+      null,
+      configService.get('PORT'),
+    );
+
+    logger.info('Bot launched. mode: webhook');
+  } else {
+    await botService.bot.launch();
+
+    logger.info('Bot launched. mode: long-polling');
+  }
 }
 
 bootstrap().catch(console.error);
