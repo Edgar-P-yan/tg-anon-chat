@@ -1,0 +1,25 @@
+.git
+__tests__
+dist
+node_modules
+
+# Configs
+.github
+.vscode
+.editorconfig
+.env
+.env.example
+*.env
+.eslintignore
+.eslintc.json
+.gitignore
+.prettierrc
+.travis.yml
+jest.config.js
+
+# Docs
+README.md
+
+# Logs
+yarn-error.log
+logs
